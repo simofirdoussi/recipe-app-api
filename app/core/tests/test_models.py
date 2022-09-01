@@ -31,3 +31,8 @@ class ModelTests(TestCase):
         for email, expected in sample_emails:
             user = get_user_model().objects.create_user(email, 'sample123')
             self.assertEqual(user.email, expected)
+
+    def test_user_creation_without_email(self):
+        """ testing the creation of a new user without email. """
+        with self.assertRaises(ValueError):
+            get_user_model().objects.create_user('', 'test123')
