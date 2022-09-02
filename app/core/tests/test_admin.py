@@ -1,9 +1,8 @@
 """ test for the django admin modifications. """
 
-from unittest import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.test import Client
+from django.test import Client, TestCase
 
 
 class AdminSiteTests(TestCase):
@@ -20,7 +19,7 @@ class AdminSiteTests(TestCase):
         self.user = get_user_model().objects.create_user(
             email='user@example.com',
             password='test1234',
-            name='Test test'
+            name='Test User'
         )
 
     def test_users_list(self):
