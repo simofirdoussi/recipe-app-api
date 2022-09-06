@@ -11,9 +11,11 @@ from rest_framework import status
 
 CREATE_USER_URL = reverse('user:create')
 
+
 def create_user(**params):
     """Create and return a new user."""
     return get_user_model().objects.create_user(**params)
+
 
 class PublicUserApiTests(TestCase):
     """Test the public features of the user API."""
@@ -23,9 +25,9 @@ class PublicUserApiTests(TestCase):
     def test_create_user_success(self):
         """test creating a user is successful."""
         payload = {
-            'email':'test@example.com',
-            'password':'testing1234',
-            'name':'Jhon Doe',
+            'email': 'test@example.com',
+            'password': 'testing1234',
+            'name': 'Jhon Doe',
         }
         res = self.client.post(CREATE_USER_URL, payload)
 
@@ -38,9 +40,9 @@ class PublicUserApiTests(TestCase):
     def test_user_with_email_exists_error(self):
         """Test error returned is user with email exists."""
         payload = {
-            'email':'test@example.com',
-            'password':'testing1234',
-            'name':'Jhon Doe',
+            'email': 'test@example.com',
+            'password': 'testing1234',
+            'name': 'Jhon Doe',
         }
         create_user(**payload)
         res = self.client.post(CREATE_USER_URL, payload)
@@ -50,9 +52,9 @@ class PublicUserApiTests(TestCase):
     def test_password_too_short_error(self):
         """Test error is returned if password is too short."""
         payload = {
-            'email':'test@example.com',
-            'password':'pw',
-            'name':'test name'
+            'email': 'test@example.com',
+            'password': 'pw',
+            'name': 'test name'
         }
         res = self.client.post(CREATE_USER_URL, payload)
 
