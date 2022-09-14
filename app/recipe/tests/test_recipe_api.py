@@ -179,7 +179,7 @@ class PrivateRecipeAPITest(TestCase):
 
     def test_delete_recipe(self):
         """Test the deletion of a recipe."""
-        recipe = create_recipe(user = self.user)
+        recipe = create_recipe(user=self.user)
         url = recipe_detail_url(recipe.id)
         res = self.client.delete(url)
 
