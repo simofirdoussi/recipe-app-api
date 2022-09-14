@@ -22,6 +22,11 @@ def recipe_detail_url(recipe_id):
     return reverse('recipe:recipe-detail', args=[recipe_id])
 
 
+def create_user(**params):
+    """Creates a user."""
+    return get_user_model().objects.create_user(**params)
+
+
 def create_recipe(user, **params):
     """Create and return a sample recipe."""
     defaults = {
@@ -133,3 +138,41 @@ class PrivateRecipeAPITest(TestCase):
         self.assertEqual(recipe.title, payload['title'])
         self.assertEqual(recipe.link, original_link)
         self.assertEqual(recipe.user, self.user)
+
+    def test_full_update(self):
+        """Test the full update of a recipe object."""
+        payload = {
+            'title': 'Sample recipe title update',
+            'time_minutes': 50,
+            'price': Decimal('20.25'),
+            'description': 'Sample description update',
+            'link': 'http://example.com/recipe_update.pdf',
+        }
+        recipe = create_recipe(user=self.user)
+        url = recipe_detail_url(recipe.id)
+        res = self.client.put(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        recipe.refresh_from_db()
+        for k, v in payload.items():
+            self.assertEqual(getattr(recipe, k), v)
+        self.assertEqual(recipe.user, self.user)
+
+    def test_update_user_returns_error(self):
+        """Test returns error when changing the user of a recipe."""
+        recipe = create_recipe(user=self.user)
+        other_user = create_user(
+            email='other@example.com',
+            password='password1234',
+        )
+        payload = {
+            'user': other_user,
+        }
+
+        url = recipe_detail_url(recipe.id)
+        res = self.client.patch(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        recipe.refresh_from_db()
+
+        self.assertNotEqual(recipe.user, other_user)
