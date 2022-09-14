@@ -176,3 +176,25 @@ class PrivateRecipeAPITest(TestCase):
         recipe.refresh_from_db()
 
         self.assertNotEqual(recipe.user, other_user)
+
+    def test_delete_recipe(self):
+        """Test the deletion of a recipe."""
+        recipe = create_recipe(user = self.user)
+        url = recipe_detail_url(recipe.id)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Recipe.objects.filter(id=recipe.id).exists())
+
+    def test_delete_other_user_recipe(self):
+        """Test deleting other users recipe error."""
+        other_user = create_user(
+            email='email@exple.com',
+            password='pass1234@',
+        )
+        recipe = create_recipe(user=other_user)
+        url = recipe_detail_url(recipe.id)
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertTrue(Recipe.objects.filter(id=recipe.id).exists())
