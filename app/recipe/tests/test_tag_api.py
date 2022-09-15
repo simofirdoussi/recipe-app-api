@@ -23,6 +23,11 @@ def create_user(email='email@example.com', password='pass1234'):
     )
 
 
+def tag_detail_url(tag_id):
+    """Returns the detail url of a specific tag."""
+    return reverse('recipe:tag-detail', args=[tag_id])
+
+
 def create_tag(user, **params):
     """Create and return a tag object."""
     defaults = {
@@ -82,3 +87,18 @@ class PrivateTagAPITest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+
+    def test_update_tag(self):
+        """Test update tags."""
+        tag = create_tag(user=self.user)
+        payload = {
+            'name': 'tag name updated.'
+        }
+
+        url = tag_detail_url(tag.id)
+        res = self.client.patch(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        tag.refresh_from_db()
+        self.assertEqual(tag.name, payload['name'])
+        self.assertEqual(tag.user, self.user)
