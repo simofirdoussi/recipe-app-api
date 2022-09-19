@@ -2,7 +2,11 @@
 Recipe serializers
 """
 
-from core.models import Recipe, Tag
+from core.models import (
+    Recipe,
+    Tag,
+    Ingredient
+    )
 from rest_framework import serializers
 
 
@@ -64,3 +68,12 @@ class RecipeDetailSerializer(RecipeSerializer):
 
         instance.save()
         return instance
+
+
+class IngredientSerializer(serializers.ModelSerializer):
+    """Ingredient serializer."""
+
+    class Meta:
+        model = Ingredient
+        fields = ['id', 'name']
+        read_only_fields = ['id']
