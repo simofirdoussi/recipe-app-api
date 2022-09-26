@@ -406,6 +406,50 @@ class PrivateRecipeAPITest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(recipe.ingredients.count(), 0)
 
+    def test_recipe_tags_filtering(self):
+        """Test filtering the recipes by tags."""
+        recipe1 = create_recipe(user=self.user, title='recipe 1')
+        recipe2 = create_recipe(user=self.user, title='recipe 2')
+        tag1 = Tag.objects.create(name='tag1', user=self.user)
+        tag2 = Tag.objects.create(name='tag2', user=self.user)
+        recipe1.tags.add(tag1)
+        recipe2.tags.add(tag2)
+        recipe3 = create_recipe(user=self.user, title='recipe 3')
+
+        params = {'tags': f'{tag1.id}, {tag2.id}'}
+        res = self.client.get(RECIPE_URL, params)
+
+        r1 = RecipeSerializer(recipe1)
+        r2 = RecipeSerializer(recipe2)
+        r3 = RecipeSerializer(recipe3)
+
+        self.assertIn(r1.data, res.data)
+        self.assertIn(r2.data, res.data)
+        self.assertNotIn(r3.data, res.data)
+
+    def test_recipe_ingredients_filtering(self):
+        """Test filtering recipes by ingredient."""
+        recipe1 = create_recipe(user=self.user, title='recipe 1')
+        recipe2 = create_recipe(user=self.user, title='recipe 2')
+        ingredient1 = Ingredient.objects.create(user=self.user,
+                                                name='ingredient 1')
+        ingredient2 = Ingredient.objects.create(user=self.user,
+                                                name='ingredient 2')
+        recipe1.ingredients.add(ingredient1)
+        recipe2.ingredients.add(ingredient2)
+        recipe3 = create_recipe(user=self.user, title='recipe 3')
+
+        params = {'ingredients': f'{ingredient1.id}, {ingredient2.id}'}
+        res = self.client.get(RECIPE_URL, params)
+
+        r1 = RecipeDetailSerializer(recipe1)
+        r2 = RecipeDetailSerializer(recipe2)
+        r3 = RecipeDetailSerializer(recipe3)
+
+        self.assertIn(r1.data, res.data)
+        self.assertIn(r2.data, res.data)
+        self.assertNotIn(r3.data, res.data)
+
 
 class TestUploadImage(TestCase):
     """Unit tests for recipe image upload."""
