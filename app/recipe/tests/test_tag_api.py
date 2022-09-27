@@ -12,6 +12,8 @@ from rest_framework.test import APIClient
 from core.models import Tag
 from recipe.serializers import TagSerializer
 
+from .test_ingredient_apis import create_recipe
+
 TAG_URL = reverse('recipe:tag-list')
 
 
@@ -111,3 +113,30 @@ class PrivateTagAPITest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Tag.objects.filter(id=tag.id).exists())
+
+    def test_filter_tags_recipe(self):
+        """Test filtering tags assigned to recipes."""
+        recipe1 = create_recipe(user=self.user, title='recipe 1')
+        tag1 = create_tag(user=self.user, name='tag1')
+        tag2 = create_tag(user=self.user, name='tag2')
+
+        recipe1.tags.add(tag1)
+        res = self.client.get(TAG_URL, {'assigned_only': 1})
+
+        ts1 = TagSerializer(tag1)
+        ts2 = TagSerializer(tag2)
+
+        self.assertIn(ts1.data, res.data)
+        self.assertNotIn(ts2.data, res.data)
+
+    def test_filtered_tags_unique(self):
+        """Testing uniqueness of the assigned tag."""
+        r1 = create_recipe(user=self.user, title='recipe 1')
+        r2 = create_recipe(user=self.user, title='recipe 2')
+        tag1 = create_tag(user=self.user, name='tag 1')
+
+        r1.tags.add(tag1)
+        r2.tags.add(tag1)
+
+        res = self.client.get(TAG_URL, {'assigned_only': 1})
+        self.assertEqual(len(res.data), 1)
