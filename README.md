@@ -1,5 +1,5 @@
 <h1> A Recipe API using TDD </h1>
-note: This repository is the fruit of following <a src="https://www.udemy.com/course/django-python-advanced/" _target="Blank">this course</a>.
+note: This repository is the fruit of following <a href="https://www.udemy.com/course/django-python-advanced/" _target="Blank">this course</a>.
 
 <h3> Steps to get the project on your computer: </h3>
 
@@ -41,4 +41,4 @@ An auto API Documentation has been set using swagger.
 `````shell script
 http://127.0.0.1:8000/api/docs/
 `````
-![alt](https://github.com/simofirdoussi/recipe-api/blob/main/images/swagger-docs.png)
+![alt](https://github.com/simofirdoussi/recipe-app-api/blob/main/images/swagger-docs.png)
